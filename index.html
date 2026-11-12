@@ -1,0 +1,450 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Орнамент веры — Древо жизни</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; }
+        
+        header { background: linear-gradient(135deg, #c8102e, #8a0b1f); color: white; text-align: center; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+        header h1 { font-size: 2em; letter-spacing: 1px; }
+        header p { font-size: 1em; opacity: 0.9; margin-top: 5px; }
+        
+        .sound-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1em; transition: all 0.3s; display: flex; align-items: center; gap: 5px; }
+        .sound-btn:hover { background: rgba(255,255,255,0.4); }
+        .sound-btn.playing { background: white; color: #c8102e; }
+
+        nav { display: flex; justify-content: center; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-wrap: wrap; }
+        .tab-btn { background: none; border: none; padding: 15px 20px; font-size: 1.1em; cursor: pointer; color: #555; font-weight: bold; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab-btn:hover { color: #c8102e; background-color: #f9f9f9; }
+        .tab-btn.active { color: #c8102e; border-bottom: 3px solid #c8102e; }
+        .tab-content { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* МУЗЕЙ */
+        .museum-container { display: flex; gap: 20px; }
+        .sidebar { width: 320px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: fit-content; max-height: 600px; overflow-y: auto; }
+        .sidebar h3 { margin-bottom: 10px; color: #c8102e; font-size: 1.1em; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #eee; transition: background 0.2s; font-size: 1.05em; }
+        .sidebar li:hover { background-color: #f0f0f0; color: #c8102e; }
+        .sidebar li:last-child { border-bottom: none; }
+        
+        .main-content { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .image-container { 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            height: 450px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
+        
+        #ornament-img, #modern-img { 
+            width: 90%; 
+            height: 90%; 
+            object-fit: contain; 
+            transition: none; 
+        }
+        
+        .animate { animation: floatPulse 4s ease-in-out infinite; }
+        @keyframes floatPulse {
+            0% { transform: scale(1) translateY(0px) rotate(0deg); }
+            50% { transform: scale(1.3) translateY(-15px) rotate(3deg); }
+            100% { transform: scale(1) translateY(0px) rotate(0deg); }
+        }
+        
+        .info-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 1.1em; line-height: 1.6; min-height: 120px; }
+
+        /* ИГРА */
+        .game-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+        #quiz-img { max-width: 300px; max-height: 300px; margin: 20px auto; display: block; border-radius: 8px; }
+        .options { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 20px auto; text-align: left; }
+        .options label { padding: 10px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-size: 1.1em; }
+        .options label:hover { border-color: #c8102e; background-color: #fff0f2; }
+        .options input[type="radio"] { margin-right: 10px; }
+        .options label.correct-answer { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .options label.wrong-answer { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+        .game-controls { display: flex; gap: 15px; justify-content: center; align-items: center; margin-top: 20px; }
+        .game-controls button { padding: 10px 25px; font-size: 1.1em; background-color: #c8102e; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+        .game-controls button:hover { background-color: #8a0b1f; }
+        #score-display { font-size: 1.2em; font-weight: bold; color: #c8102e; }
+
+        /* КАЛЬКУЛЯТОР */
+        .calc-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .calc-layout { display: flex; gap: 30px; margin-top: 20px; }
+        .checkboxes { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        .group { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+        .group h4 { margin-bottom: 10px; color: #c8102e; font-size: 1.1em; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .group label { display: block; margin: 8px 0; font-size: 1.05em; cursor: pointer; }
+        
+        .calc-preview { width: 300px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+        .preview-box { width: 100%; height: 300px; background: #f4f6f9; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden; }
+        .preview-box img { max-width: 90%; max-height: 90%; display: none; }
+        .preview-text { font-size: 0.9em; color: #666; text-align: center; font-style: italic; }
+        
+        .calc-container > button { padding: 12px 30px; font-size: 1.1em; background-color: #c8102e; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s; margin-top: 20px; width: 100%; }
+        .calc-container > button:hover { background-color: #8a0b1f; }
+        #calc-result { margin-top: 20px; }
+
+        /* СОВРЕМЕННОСТЬ */
+        .modern-container { display: flex; gap: 20px; }
+        .modern-text-block { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound-correct" src="correct.mp3"></audio>
+    <audio id="sound-wrong" src="wrong.mp3"></audio>
+
+    <header>
+        <h1>Орнамент веры</h1>
+        <p>Живая память традиций</p>
+        <button class="sound-btn" id="music-btn" onclick="toggleMusic()">
+            <span id="music-icon">🔇</span> <span id="music-text">Вкл. музыку</span>
+        </button>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="openTab('museum', this)">Музей</button>
+        <button class="tab-btn" onclick="openTab('modern', this)">Современность</button>
+        <button class="tab-btn" onclick="openTab('game', this)">Игра</button>
+        <button class="tab-btn" onclick="openTab('calculator', this)">Калькулятор</button>
+    </nav>
+
+    <!-- МУЗЕЙ -->
+    <section id="museum" class="tab-content active">
+        <div class="museum-container">
+            <div class="sidebar">
+                <h3>Список орнаментов</h3>
+                <ul id="ornament-list">
+                    <li onclick="showOrnament(0)">МАЦІ (Мать)</li>
+                    <li onclick="showOrnament(1)">БАГАЦЦЕ (Богатство)</li>
+                    <li onclick="showOrnament(2)">СОНЦА (Солнце)</li>
+                    <li onclick="showOrnament(3)">СЯМ'Я (Семья)</li>
+                    <li onclick="showOrnament(4)">ЗЯМЛЯ (Земля)</li>
+                    <li onclick="showOrnament(5)">ЖЫЦЦЁ (Жизнь/Древо)</li>
+                    <li onclick="showOrnament(6)">Белорусский дом</li>
+                    <li onclick="showOrnament(7)">Птицы и олени</li>
+                    <li onclick="showOrnament(8)">Символ предков</li>
+                    <li onclick="showOrnament(9)">Символ Берегини</li>
+                    <li onclick="showOrnament(10)">Всадник на коне</li>
+                    <li onclick="showOrnament(11)">Виноград на рушнике</li>
+                    <li onclick="showOrnament(12)">Красный ковер (ромбы)</li>
+                    <li onclick="showOrnament(13)">Древо на рушнике</li>
+                </ul>
+            </div>
+            <div class="main-content">
+                <div class="image-container">
+                    <img id="ornament-img" src="" alt="Орнамент" style="display: none;">
+                </div>
+                <div id="ornament-info" class="info-box">Выберите орнамент из списка слева, чтобы увидеть его описание и анимацию.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- СОВРЕМЕННОСТЬ (НОВЫЙ РАЗДЕЛ) -->
+    <section id="modern" class="tab-content">
+        <div class="museum-container">
+            <div class="sidebar">
+                <h3>Орнамент в нашей жизни</h3>
+                <ul id="modern-list">
+                    <li onclick="showModern(0)">Мода (футболка)</li>
+                    <li onclick="showModern(1)">Мода (платье с маками)</li>
+                    <li onclick="showModern(2)">Мода (вышивка на спине)</li>
+                    <li onclick="showModern(3)">Авангардное платье</li>
+                    <li onclick="showModern(4)">Синее платье</li>
+                    <li onclick="showModern(5)">Интерьер (панно)</li>
+                    <li onclick="showModern(6)">Подушки</li>
+                    <li onclick="showModern(7)">Панно на стене</li>
+                    <li onclick="showModern(8)">Садовая качеля</li>
+                    <li onclick="showModern(9)">Кафе с панно</li>
+                    <li onclick="showModern(10)">Мурал в Минске</li>
+                    <li onclick="showModern(11)">Бордюр «Вращение»</li>
+                    <li onclick="showModern(12)">Трафареты</li>
+                    <li onclick="showModern(13)">Браслеты</li>
+                    <li onclick="showModern(14)">Зеркало</li>
+                </ul>
+            </div>
+            <div class="main-content">
+                <div class="image-container">
+                    <img id="modern-img" src="" alt="Современный дизайн" style="display: none;">
+                </div>
+                <div id="modern-info" class="modern-text-block">
+                    <p>Орнамент в современной жизни вышел за рамки музейных экспонатов и этнографических экспедиций, превратившись из сакрального оберега в живой элемент дизайна, моды и городской среды.</p>
+                    <p><strong>Что символизирует орнамент:</strong><br>
+                    • Цвета: белый символизирует чистоту, красный — солнце, жизнь и кровь.<br>
+                    • Ромб (основа многих узоров, включая главный элемент государственного флага) — знак солнца, плодородия и засеянного поля.<br>
+                    • Восьмиконечная звезда (розетка) — образ человека и его связи с космосом.<br>
+                    • «Древо жизни» — связь поколений, семьи и рода.</p>
+                    <p><strong>Орнамент в современной культуре:</strong><br>
+                    • Мода и стиль: Элементы национальной вышивки и геометрические узоры сегодня активно используются на повседневной одежде (майках, байках, худи, кепках), сумках и аксессуарах.<br>
+                    • Дизайн и городская среда: Узоры интегрируют в интерьеры, полиграфию, сувенирную продукцию, оформление транспорта, граффити и муралы на жилых домах.<br>
+                    • Государственная символика: Исторический вышитый узор является ключевым визуальным элементом государственного флага Республики Беларусь.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ИГРА -->
+    <section id="game" class="tab-content">
+        <div class="game-container">
+            <h2>Что означает этот орнамент?</h2>
+            <img id="quiz-img" src="" alt="Вопрос" style="display: none;">
+            <div class="options">
+                <label><input type="radio" name="answer" value="0"> <span id="rb1"></span></label>
+                <label><input type="radio" name="answer" value="1"> <span id="rb2"></span></label>
+                <label><input type="radio" name="answer" value="2"> <span id="rb3"></span></label>
+                <label><input type="radio" name="answer" value="3"> <span id="rb4"></span></label>
+            </div>
+            <div class="game-controls">
+                <button onclick="checkAnswer()">Проверить</button>
+                <button onclick="nextQuestion()">Следующий</button>
+                <p id="score-display">Счёт: 0</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- КАЛЬКУЛЯТОР -->
+    <section id="calculator" class="tab-content">
+        <div class="calc-container">
+            <h3>Интерактивный калькулятор символов</h3>
+            <p style="margin-top: 10px; color: #666;">Выберите элементы, чтобы увидеть их значение и пример.</p>
+            
+            <div class="calc-layout">
+                <div class="checkboxes">
+                    <div class="group">
+                        <h4>Цвета</h4>
+                        <label><input type="checkbox" onclick="updatePreview('color_red.PNG', 'Красный — жизнь, солнце, огонь')"> Красный</label>
+                        <label><input type="checkbox" onclick="updatePreview('color_black.PNG', 'Чёрный — плодородие земли')"> Чёрный</label>
+                        <label><input type="checkbox" onclick="updatePreview('color_white.PNG', 'Белый — чистота и гармония')"> Белый</label>
+                        <label><input type="checkbox" onclick="updatePreview('color_blue.PNG', 'Синий — небеса, духовность')"> Синий</label>
+                        <label><input type="checkbox" onclick="updatePreview('color_green.PNG', 'Зелёный — жизнь и возрождение')"> Зелёный</label>
+                    </div>
+                    <div class="group">
+                        <h4>Мотивы</h4>
+                        <label><input type="checkbox" onclick="updatePreview('motif_sun.PNG', 'Солнце — свет и плодородие')"> Солнце</label>
+                        <label><input type="checkbox" onclick="updatePreview('motif_water.PNG', 'Вода — источник жизни')"> Вода</label>
+                        <label><input type="checkbox" onclick="updatePreview('earth.PNG', 'Земля — плодородие')"> Земля</label>
+                        <label><input type="checkbox" onclick="updatePreview('tree_motif.PNG', 'Древо жизни — связь миров')"> Древо</label>
+                    </div>
+                </div>
+
+                <div class="calc-preview">
+                    <div class="preview-box">
+                        <img id="preview-img" src="" alt="Пример">
+                    </div>
+                    <div class="preview-text" id="preview-text">Выберите элемент слева, чтобы увидеть пример</div>
+                </div>
+            </div>
+
+            <button onclick="decodeOrnament()">Показать полную расшифровку</button>
+            <div id="calc-result" class="info-box"></div>
+        </div>
+    </section>
+
+    <script>
+        // --- МУЗЫКА ---
+        const bgMusic = document.getElementById('bg-music');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                document.getElementById('music-icon').textContent = '🔇';
+                document.getElementById('music-text').textContent = 'Вкл. музыку';
+                document.getElementById('music-btn').classList.remove('playing');
+            } else {
+                bgMusic.play().then(() => {
+                    document.getElementById('music-icon').textContent = '🔊';
+                    document.getElementById('music-text').textContent = 'Выкл. музыку';
+                    document.getElementById('music-btn').classList.add('playing');
+                }).catch(error => {
+                    alert('Не удалось включить музыку. Проверьте наличие файла music.mp3');
+                });
+            }
+            isMusicPlaying = !isMusicPlaying;
+        }
+
+        // --- ВКЛАДКИ ---
+        function openTab(tabName, btn) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            if (btn) btn.classList.add('active');
+        }
+
+        // --- МУЗЕЙ (14 ОРНАМЕНТОВ) ---
+        const ornamentsData = [
+            { img: 'mat.PNG', text: 'МАЦІ (Мать) — мать – начало всего живого. Самый популярный вектор у народов Белоруссии. Единственный способ выжить для народа — женская возможность рожать – создавать новые жизни. Поэтому орнамент входит во многие схемы, украшая большинство изделий из ткани.' },
+            { img: 'pogreb.PNG', text: 'БАГАЦЦЕ (Богатство) — у белорусского народа одним из популярных пожеланий является пожелание богатства и достатка. Чтобы нива давала обильный урожай, а в доме было изобилие во всем. В том числе это означает и большое потомство.' },
+            { img: 'sun_sim.PNG', text: 'СОНЦА (Солнце) — древние верования обожествляли и солнце. Было принято просить у него помощи, как у божества. У славян Солнце возглавляло пантеон богов, находясь на его вершине. Божество имело несколько разных наименований: Хорас, Даждьбог или Сварог.' },
+            { img: 'family.PNG', text: 'СЯМ\'Я (Семья) — символ крепкой семьи. Орнамент часто вышивался на рушниках, которые было принято относить в церковь, к иконе Божьей матери. Вектор, символизирующий солнце, жизнь и продолжение рода.' },
+            { img: 'earth.PNG', text: 'ЗЯМЛЯ (Земля) — символ земли и плодородия. Изображается в виде ромбов и квадратов, которые ассоциируются с плодородием и жизненной силой.' },
+            { img: 'tree_meet.PNG', text: 'ЖЫЦЦЁ (Жизнь/Древо) — древо жизни — символ связи неба, земли и подземного мира. Ассоциируется с плодородием, ростом и бессмертием.' },
+            { img: 'house1.PNG', text: 'Белорусский дом — орнамент с птицами и домом. Символизирует уют, семейное гнездо и защиту. Часто вышивался на рушниках и одежде.' },
+            { img: 'birds_deer.PNG', text: 'Птицы и олени — анималистический мотив. Птицы символизируют весть, а олени — силу и защиту. Часто встречается на рушниках и одежде.' },
+            { img: 'ancestors.PNG', text: 'Символ предков — узор олицетворяет в своем роде молитву, прошение к Богу, за умерших родных и близких. Чтобы они оказались в Раю, земля была пухом, а солнце обогревало их.' },
+            { img: 'bereginya.PNG', text: 'Символ Берегини — значение вектора можно узнать из славянской мифологии. Берегиня – богиня семейного очага, рукоделия, хозяйства. Также она покровительствует воде.' },
+            { img: 'horse.PNG', text: 'Всадник на коне — символ силы, мужества и защиты. Часто изображался на рушниках и одежде. Олицетворяет победу добра над злом.' },
+            { img: 'grape_towel.PNG', text: 'Виноград на рушнике — символ плодородия, изобилия и благополучия. В христианской традиции — символ Христа и таинства причастия.' },
+            { img: 'carpet_red.PNG', text: 'Красный ковер (узор из ромбов) — геометрический орнамент, символизирующий землю, плодородие и жизненную силу. Часто использовался в тканых изделиях и интерьере.' },
+            { img: 'towel_tree.PNG', text: 'Древо на рушнике — древо жизни — символ связи неба, земли и подземного мира. Ассоциируется с плодородием, ростом и бессмертием.' }
+        ];
+
+        function showOrnament(index) {
+            const imgElement = document.getElementById('ornament-img');
+            const infoElement = document.getElementById('ornament-info');
+            
+            imgElement.src = ornamentsData[index].img;
+            imgElement.style.display = 'block';
+            
+            imgElement.classList.remove('animate');
+            void imgElement.offsetWidth; 
+            imgElement.classList.add('animate');
+            
+            infoElement.textContent = ornamentsData[index].text;
+        }
+
+        // --- СОВРЕМЕННОСТЬ (15 КАРТИНОК) ---
+        const modernData = [
+            { img: 'mod_shirt.PNG', text: 'Мода и стиль: Футболка с национальным орнаментом «МАЛАДОСЦЬ». Национальный орнамент стал частью тренда на этнику и самовыражение.' },
+            { img: 'mod_dress1.PNG', text: 'Мода: Современное платье с вышивкой красных маков. Переосмысление традиционных образов в высокой моде.' },
+            { img: 'mod_dress2.PNG', text: 'Мода: Платье с вышивкой на спине (крупный план). Древние техники адаптируются под новые материалы и запросы времени.' },
+            { img: 'mod_dress3.PNG', text: 'Авангард: Современное платье с сетчатым узором, напоминающим геометрию орнамента.' },
+            { img: 'mod_dress4.PNG', text: 'Мода: Синее платье с орнаментом. Цвета и символы используются в дизайне одежды.' },
+            { img: 'design_interior1.PNG', text: 'Дизайн интерьера: Панно с орнаментом на бордовом фоне. Узоры интегрируют в интерьеры для создания национального колорита.' },
+            { img: 'design_interior2.PNG', text: 'Дизайн интерьера: Красные подушки с орнаментом на диване. Уют и стиль в современном доме.' },
+            { img: 'design_wall.PNG', text: 'Дизайн интерьера: Белое панно с узором на стене в спальне. Геометрические узоры в современном декоре.' },
+            { img: 'design_swing.PNG', text: 'Садовая качеля с орнаментом. Орнамент вышел за рамки дома и используется в ландшафтном дизайне.' },
+            { img: 'design_cafe.PNG', text: 'Дизайн общественных пространств: Кафе с панно из орнаментов на стене. Национальный колорит в городской среде.' },
+            { img: 'design_mural.PNG', text: 'Стрит-арт: Черно-белый мурал (граффити) с орнаментом в Минске. Узоры интегрируют в оформление городских стен.' },
+            { img: 'design_border.PNG', text: 'Декор: Бордюр «Вращение». Современные мастера адаптируют древние узоры под новые материалы (пластик, трафареты).' },
+            { img: 'design_set.PNG', text: 'Набор «Славянский диптих» (трафареты). Переосмысление ремесел и возможность сделать орнамент своими руками.' },
+            { img: 'accessories_bracelets.PNG', text: 'Аксессуары: Кожаные браслеты с орнаментом. Орнамент в повседневной жизни и мелкой пластике.' },
+            { img: 'design_mirror.PNG', text: 'Дизайн: Зеркало с узором. Геометрические мотивы в современном интерьере.' }
+        ];
+
+        function showModern(index) {
+            const imgElement = document.getElementById('modern-img');
+            const infoElement = document.getElementById('modern-info');
+            
+            imgElement.src = modernData[index].img;
+            imgElement.style.display = 'block';
+            
+            imgElement.classList.remove('animate');
+            void imgElement.offsetWidth; 
+            imgElement.classList.add('animate');
+            
+            // Оставляем общий текст, но можем добавить подпись к картинке
+            // infoElement.textContent = modernData[index].text; 
+            // Оставим общий текст, так как он описывает всю концепцию
+        }
+
+        // --- ИГРА (14 ВОПРОСОВ) ---
+        const quizData = [
+            { img: 'mat.PNG', options: ['МАЦІ (Мать)', 'БАГАЦЦЕ (Богатство)', 'СОНЦА (Солнце)', 'ЗЯМЛЯ (Земля)'], correct: 0 },
+            { img: 'pogreb.PNG', options: ['СЯМ\'Я (Семья)', 'БАГАЦЦЕ (Богатство)', 'ЖЫЦЦЁ (Жизнь)', 'Белорусский дом'], correct: 1 },
+            { img: 'sun_sim.PNG', options: ['СОНЦА (Солнце)', 'ЗЯМЛЯ (Земля)', 'МАЦІ (Мать)', 'Птицы и олени'], correct: 0 },
+            { img: 'family.PNG', options: ['СЯМ\'Я (Семья)', 'БАГАЦЦЕ (Богатство)', 'СОНЦА (Солнце)', 'Виноград'], correct: 0 },
+            { img: 'earth.PNG', options: ['ЗЯМЛЯ (Земля)', 'СОНЦА (Солнце)', 'Белорусский дом', 'МАЦІ (Мать)'], correct: 0 },
+            { img: 'tree_meet.PNG', options: ['ЖЫЦЦЁ (Жизнь/Древо)', 'СОНЦА (Солнце)', 'БАГАЦЦЕ (Богатство)', 'Белорусский дом'], correct: 0 },
+            { img: 'house1.PNG', options: ['Белорусский дом', 'Символ предков', 'МАЦІ (Мать)', 'БАГАЦЦЕ (Богатство)'], correct: 0 },
+            { img: 'birds_deer.PNG', options: ['Птицы и олени', 'Белорусский дом', 'СОНЦА (Солнце)', 'Всадник на коне'], correct: 0 },
+            { img: 'ancestors.PNG', options: ['Символ предков', 'МАЦІ (Мать)', 'Белорусский дом', 'Птицы и олени'], correct: 0 },
+            { img: 'bereginya.PNG', options: ['Символ Берегини', 'Символ предков', 'Виноград', 'СОНЦА (Солнце)'], correct: 0 },
+            { img: 'horse.PNG', options: ['Всадник на коне', 'Белорусский дом', 'СЯМ\'Я (Семья)', 'БАГАЦЦЕ (Богатство)'], correct: 0 },
+            { img: 'grape_towel.PNG', options: ['Виноград на рушнике', 'Символ Берегини', 'МАЦІ (Мать)', 'Белорусский дом'], correct: 0 },
+            { img: 'carpet_red.PNG', options: ['Красный ковер (ромбы)', 'Древо на рушнике', 'Символ предков', 'СОНЦА (Солнце)'], correct: 0 },
+            { img: 'towel_tree.PNG', options: ['Древо на рушнике', 'Виноград на рушнике', 'Белорусский дом', 'БАГАЦЦЕ (Богатство)'], correct: 0 }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const q = quizData[currentQuestion];
+            const imgEl = document.getElementById('quiz-img');
+            imgEl.src = q.img;
+            imgEl.style.display = 'block';
+            document.getElementById('rb1').textContent = q.options[0];
+            document.getElementById('rb2').textContent = q.options[1];
+            document.getElementById('rb3').textContent = q.options[2];
+            document.getElementById('rb4').textContent = q.options[3];
+            const radios = document.querySelectorAll('input[name="answer"]');
+            radios.forEach(r => {
+                r.checked = false;
+                r.parentElement.classList.remove('correct-answer', 'wrong-answer');
+            });
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= quizData.length) currentQuestion = 0;
+            loadQuestion();
+        }
+
+        function checkAnswer() {
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (!selected) { alert('Выберите вариант ответа!'); return; }
+            const answer = parseInt(selected.value);
+            const label = selected.parentElement;
+            const correctSound = document.getElementById('sound-correct');
+            const wrongSound = document.getElementById('sound-wrong');
+
+            if (answer === quizData[currentQuestion].correct) {
+                score++;
+                document.getElementById('score-display').textContent = 'Счёт: ' + score;
+                label.classList.add('correct-answer');
+                if (correctSound) { correctSound.currentTime = 0; correctSound.play().catch(e => {}); }
+            } else {
+                label.classList.add('wrong-answer');
+                const correctRadio = document.querySelector(`input[value="${quizData[currentQuestion].correct}"]`);
+                correctRadio.parentElement.classList.add('correct-answer');
+                if (wrongSound) { wrongSound.currentTime = 0; wrongSound.play().catch(e => {}); }
+            }
+        }
+
+        window.onload = function() { loadQuestion(); };
+
+        // --- КАЛЬКУЛЯТОР ---
+        function updatePreview(imgSrc, textInfo) {
+            const previewImg = document.getElementById('preview-img');
+            const previewText = document.getElementById('preview-text');
+            
+            previewImg.src = imgSrc;
+            previewImg.style.display = 'block';
+            previewText.textContent = textInfo;
+        }
+
+        function decodeOrnament() {
+            const checkboxes = document.querySelectorAll('.checkboxes input:checked');
+            const resultBox = document.getElementById('calc-result');
+            
+            if (checkboxes.length === 0) {
+                resultBox.innerHTML = 'Выберите хотя бы один элемент.';
+                return;
+            }
+
+            let resultHTML = '<strong>Полная расшифровка выбранных элементов:</strong><br><br>';
+            
+            checkboxes.forEach(cb => {
+                const labelText = cb.parentElement.textContent.trim();
+                resultHTML += `• ${labelText}<br>`;
+            });
+
+            resultBox.innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
